@@ -78,7 +78,7 @@
             .then(data => {
                 document.getElementById('message').innerHTML = data;
 
-                } else if (data.includes('違うよ')) {
+                if (data.includes('違うよ')) {
                     resetTimer();
                     startTime = null;
                 } else if (data.includes('ゲームクリア')) {
