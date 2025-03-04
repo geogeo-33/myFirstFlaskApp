@@ -68,6 +68,10 @@
                 startTimer();  // 最初のボタンを押したらタイマー開始
             }
 
+            if (waiting) return;  // 連打防止（でも感度は向上）
+            waiting = true;
+
+             document.getElementById(`btn${number}`).classList.add('done');
             
             
             fetch(`/click?number=${number}`)
@@ -76,8 +80,9 @@
                 document.getElementById('message').innerHTML = data;
 
                 if (data.includes('OK！次は')) {
-                    document.getElementById(`btn${number}`).classList.add('done');
+                    waiting = false;
                 } else if (data.includes('違うよ')) {
+                    waiting = false;
                     document.getElementById(`btn${number}`).classList.add('wrong');
                     setTimeout(()=> {
                     document.getElementById(`btn${number}`).classList.remove('wrong');                    
@@ -85,6 +90,7 @@
                     resetTimer();
                     startTime = null;
                 } else if (data.includes('ゲームクリア')) {
+                    waiting = false
                     stopTimer();
                     const finalTime = document.getElementById('timer').innerText;
                     document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
