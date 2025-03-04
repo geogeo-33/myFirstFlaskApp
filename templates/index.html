@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>数字タッチゲーム</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 4px;
+        }
+        .grid button {
+            width: 100px;
+            height: 100px;
+            font-size: 24px;
+            border-radius: 8px;
+            border: none;
+            background: #ffbf80;
+        }
+        .done {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>数字タッチゲーム</h1>
+    <p>1から順番に押してください！</p>
+    <p id ='timer'></p>
+    <div class="grid">
+        {% for i in nums %}
+                <button id="btn{{ i }}" onclick="sendNumber({{ i }})">{{ i }}</button>
+        {% endfor %}
+    </div>
+
+    <h2 id='message'></h2>
+    <script>
+        let startTime = null;
+        let timerInterval = null;
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+              const elapsedTime = ((Date.now() - startTime) / 1000 ).toFixed(2);
+                document.getElementById('timer').innerText = `タイム: ${elapsedTime}秒`;
+            }, 100)
+        }
+
+         function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            document.getElementById("timer").innerText = "タイム: 0.00秒";
+        }
+        
+        function sendNumber(number) {
+            if (!startTime) {
+                startTimer();  // 最初のボタンを押したらタイマー開始
+            }
+
+            
+            
+            fetch(`/click?number=${number}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').innerHTML = data;
+
+                if (data.includes('OK！次は')) {
+                    document.getElementById(`btn${number}`).classList.add('done');
+                } else if (data.includes('違うよ')) {
+                    document.getElementById(`btn${number}`).classList.add('wrong');
+                    setTimeout(()=> {
+                    document.getElementById(`btn${number}`).classList.remove('wrong');                    
+                    }, 1000);
+                    resetTimer();
+                    startTime = null;
+                } else if (data.includes('ゲームクリア')) {
+                    stopTimer();
+                    const finalTime = document.getElementById('timer').innerText;
+                    document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
+                }
+                
+            })
+            .catch(error => console.error('エラー:', error));
+        }
+    </script>
+</body>
+</html>
