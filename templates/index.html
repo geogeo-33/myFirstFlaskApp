@@ -73,22 +73,22 @@
             btn.disabled = true;  // クリックできないようにする
             
             
-            fetch(`/click?number=${number}`)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('message').innerHTML = data;
+            // fetch(`/click?number=${number}`)
+            // .then(response => response.text())
+            // .then(data => {
+            //     document.getElementById('message').innerHTML = data;
 
-                if (data.includes('違うよ')) {
-                    resetTimer();
-                    startTime = null;
-                } else if (data.includes('ゲームクリア')) {
-                    stopTimer();
-                    const finalTime = document.getElementById('timer').innerText;
-                    document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
-                }
+            //     if (data.includes('違うよ')) {
+            //         resetTimer();
+            //         startTime = null;
+            //     } else if (data.includes('ゲームクリア')) {
+            //         stopTimer();
+            //         const finalTime = document.getElementById('timer').innerText;
+            //         document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
+            //     }
                 
-            })
-            .catch(error => console.error('エラー:', error));
+            // })
+            // .catch(error => console.error('エラー:', error));
         }
     </script>
 </body>
