@@ -68,27 +68,30 @@
                 startTimer();  // 最初のボタンを押したらタイマー開始
             }
 
-             let btn = document.getElementById(`btn${number}`);
-            btn.classList.add('done');  // ボタンを即座に非表示
-            btn.disabled = true;  // クリックできないようにする
             
             
-            // fetch(`/click?number=${number}`)
-            // .then(response => response.text())
-            // .then(data => {
-            //     document.getElementById('message').innerHTML = data;
+            fetch(`/click?number=${number}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').innerHTML = data;
 
-            //     if (data.includes('違うよ')) {
-            //         resetTimer();
-            //         startTime = null;
-            //     } else if (data.includes('ゲームクリア')) {
-            //         stopTimer();
-            //         const finalTime = document.getElementById('timer').innerText;
-            //         document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
-            //     }
+                if (data.includes('OK！次は')) {
+                    document.getElementById(`btn${number}`).classList.add('done');
+                } else if (data.includes('違うよ')) {
+                    document.getElementById(`btn${number}`).classList.add('wrong');
+                    setTimeout(()=> {
+                    document.getElementById(`btn${number}`).classList.remove('wrong');                    
+                    }, 1000);
+                    resetTimer();
+                    startTime = null;
+                } else if (data.includes('ゲームクリア')) {
+                    stopTimer();
+                    const finalTime = document.getElementById('timer').innerText;
+                    document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
+                }
                 
-            // })
-            // .catch(error => console.error('エラー:', error));
+            })
+            .catch(error => console.error('エラー:', error));
         }
     </script>
 </body>
