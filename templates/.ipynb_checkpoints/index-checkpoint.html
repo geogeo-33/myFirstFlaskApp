@@ -42,7 +42,30 @@
     </div>
 
     <h2 id='message'></h2>
+
+    <h2>トップ１０</h2>
+    <ol id='score-list'>
+        {% for score in top_scores %}
+            <li>{{ score[1] }}</li>
+        {% endfor %}
+    </ol>
     <script>
+            function sendFinalTime() {
+                const finalTime = parseFloat(document.getElementById('timer').innerText.replace('タイム: ', '').replace('秒', ''));
+
+                fetch('/save_time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ final_time: finalTime })
+                })
+                .then(response => response.json())
+                .then(data => console.log(data.message))
+                .catch(error => console.log('エラー:', error));
+            }
+
+        
         let startTime = null;
         let timerInterval = null;
 
@@ -67,8 +90,6 @@
             if (!startTime) {
                 startTimer();  // 最初のボタンを押したらタイマー開始
             }
-
-            
             
             fetch(`/click?number=${number}`)
             .then(response => response.text())
@@ -88,6 +109,7 @@
                     stopTimer();
                     const finalTime = document.getElementById('timer').innerText;
                     document.getElementById('message').innerHTML += `<br><p>${finalTime}でクリア!</p>`;
+                    sendFinalTime();
                 }
                 
             })
